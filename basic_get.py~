@@ -1,5 +1,7 @@
+#!/usr/bin/env python3
+# customize the above shebang to your environment
 from urllib import parse
-
+import create_tables
 import cgi
 from http.server import BaseHTTPRequestHandler
 import io
