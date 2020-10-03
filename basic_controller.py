@@ -8,6 +8,7 @@ import io
 
 import basic_model
 
+
 port = 8080
 
 class SimpleHandler(BaseHTTPRequestHandler):
@@ -66,7 +67,13 @@ class SimpleHandler(BaseHTTPRequestHandler):
         # buffer so that deleting the wrapper doesn't close
         # the socket, which is still being used by the server.
         out.detach()
-
+    
+    def get_endpoints(self, endpoint='/'):
+        if endpoint.endswith('/') or endpoint.endswith('/project'):
+            project_name = 'pymotw'
+            message = (endpoint)
+            projects = '\r\n'.join(basic_model.get_projects(project_name=project_name))
+            return projects
 
     def do_GET(self):
         parsed_path = parse.urlparse(self.path)
@@ -88,17 +95,25 @@ class SimpleHandler(BaseHTTPRequestHandler):
             '',
             'HEADERS RECEIVED:',
         ]
+        message_parts.append('\r\n')
         for name, value in sorted(self.headers.items()):
             message_parts.append(
                 '{}={}'.format(name, value.rstrip())
             )
-        message_parts.append('')
-        message = '\r\n'.join(message_parts)
+        message_parts = '\r\n'.join(message_parts) 
+        endpoint = parsed_path.path
+        data = self.get_endpoints(endpoint)
+        if not data:
+            data = 'No records found.'
+
+        message_title = '\r\nProject Tasks\r\n'
+        message = '\r\n'.join(('endpoint', endpoint, message_parts, message_title, data,'\r\n'))
         self.send_response(200)
         self.send_header('Content-Type',
                          'text/plain; charset=utf-8')
         self.end_headers()
         self.wfile.write(message.encode('utf-8'))
+
 
 
 if __name__ == '__main__':
