@@ -20,11 +20,11 @@ def get_tasks(db_filename='todo.db', task_id='%'):
         else:
             query = """
             select id, priority, details, status, deadline from task
-            where id = :task_id
+            where id = {}
             order by deadline, priority
-            """
-
-        cursor.execute(query, {'task_id': task_id})
+            """.format(task_id)
+        print(query)
+        cursor.execute(query)
 
         rows = []
         for row in cursor.fetchall():

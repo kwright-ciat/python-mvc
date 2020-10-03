@@ -6,8 +6,7 @@ import cgi
 from http.server import BaseHTTPRequestHandler
 import io
 
-import basic_model
-
+import basic_controller
 
 port = 8080
 
@@ -69,32 +68,6 @@ class SimpleHandler(BaseHTTPRequestHandler):
         # the socket, which is still being used by the server.
         out.detach()
     
-    def get_endpoints(self, endpoint='/'):
-        if endpoint.count('/') > 1:
-    
-            endpoints = endpoint.split('/')
-        else:
-            endpoints = ['', endpoint, '']
-        
-        print (endpoints)
-        if endpoints[1].endswith('/project'): 
-            if not endpoints[2]:
-                project_name = '%'
-                projects = '\r\n'.join(basic_model.get_projects(project_name=project_name))
-            else:
-                project_name = endpoints[2]
-                print (project_name)
-                if project_name.isalpha():
-                    projects = '\r\n'.join(basic_model.get_projects(project_name=project_name))
-                else:
-                    projects = None 
-            
-            return projects
-        
-        elif endpoints[0].endswith('/task'):
-            task_id = endpoint
-            tasks ='\r\n'.join(basic_model.get_tasks(task_id='%'))
-            return tasks
 
     def do_GET(self):
         parsed_path = parse.urlparse(self.path)
@@ -123,7 +96,7 @@ class SimpleHandler(BaseHTTPRequestHandler):
             )
         message_parts = '\r\n'.join(message_parts) 
         endpoint = parsed_path.path
-        data = self.get_endpoints(endpoint)
+        data = basic_controller.get_endpoints(endpoint)
         if not data:
             data = 'No records found.'
 
