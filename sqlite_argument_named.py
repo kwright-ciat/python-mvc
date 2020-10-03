@@ -14,7 +14,7 @@ def get_project_id(db_filename='todo.db', project_id='1'):
 
         query = """
         select id, priority, details, status, deadline from task
-        where project = :project_name
+        where project = :id
         order by deadline, priority
         """
 
@@ -51,11 +51,12 @@ def get_project_name(db_filename='todo.db', project_name='pymotw'):
 
 def project_name_test(project_name_value):
     lines = get_project_name(project_name=project_name_value)
-    for line in lines:
-       print(line)
+    if len(lines) > 0:
+        for line in lines:
+            print(line)
     else:
-       print('no projects named "{}"'.format(project_name_value)
- 
-if __name__=='__main__':
+        print('no projects named "{}"'.format(project_name_value))
+
+if __name__ == '__main__':
     project_name_test('pymotw')
     project_name_test('ciat')
