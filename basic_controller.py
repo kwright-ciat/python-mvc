@@ -1,4 +1,4 @@
-#!bin/python
+#!bin/python3
 # customize the above shebang to your environment
 from urllib import parse
 import create_tables
@@ -74,16 +74,23 @@ class SimpleHandler(BaseHTTPRequestHandler):
     
             endpoints = endpoint.split('/')
         else:
-            endpoints = [endpoint, '']
+            endpoints = ['', endpoint, '']
         
         print (endpoints)
-        if endpoints[0].endswith('/project') and not endpoints[1]:
-            
-            project_name = '%'
-            message = (endpoint)
-            projects = '\r\n'.join(basic_model.get_projects(project_name=project_name))
+        if endpoints[1].endswith('/project'): 
+            if not endpoints[2]:
+                project_name = '%'
+                projects = '\r\n'.join(basic_model.get_projects(project_name=project_name))
+            else:
+                project_name = endpoints[2]
+                print (project_name)
+                if project_name.isalpha():
+                    projects = '\r\n'.join(basic_model.get_projects(project_name=project_name))
+                else:
+                    projects = None 
             
             return projects
+        
         elif endpoints[0].endswith('/task'):
             task_id = endpoint
             tasks ='\r\n'.join(basic_model.get_tasks(task_id='%'))

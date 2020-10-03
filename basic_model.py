@@ -31,7 +31,7 @@ def get_tasks(db_filename='todo.db', task_id='%'):
             task_id, priority, details, status, deadline = row
             rows.append('{:2d} [{:d}] {:<25} [{:<8}] ({})'.format(
                 task_id, priority, details, status, deadline))
-        print(rows) # disable later
+        # print(rows) # disable later
         return rows
 
 def get_projects(db_filename='todo.db', project_name='%'):
@@ -40,24 +40,26 @@ def get_projects(db_filename='todo.db', project_name='%'):
         cursor = conn.cursor()
         if project_name == '%':
             query = """
-            select id, priority, details, status, deadline from task
-            order by deadline, priority
+            select name, description, deadline
+            from project
+            order by name
             """
         else:
-            
             query = """
-            select id, priority, details, status, deadline from task
-            where project = :project_name
-            order by deadline, priority
-            """
+            select name, description, deadline
+            from project where name = "{}"
+            """.format(project_name)
 
-        cursor.execute(query, {'project_name': project_name})
+        print (query)
+        cursor.execute(query)
 
         rows = []
+
         for row in cursor.fetchall():
-            task_id, priority, details, status, deadline = row
-            rows.append('{:2d} [{:d}] {:<25} [{:<8}] ({})'.format(
-                task_id, priority, details, status, deadline))
+            print(row)
+            name, description, deadline = row
+            rows.append('{} {:<25} ({})'.format(
+                name, description, deadline))
         # print(rows) # disable later
         return rows
 
@@ -68,6 +70,7 @@ def get_tasks_test(task_id_value='%'):
             print(line)
     else:
         print('no tasks with a task id of "{}"'.format(task_id_value))
+    print()
 
 def get_projects_test(project_name_value='pymotw'):
     lines = get_projects(project_name=project_name_value)
@@ -76,6 +79,7 @@ def get_projects_test(project_name_value='pymotw'):
             print(line)
     else:
         print('no projects named "{}"'.format(project_name_value))
+    print()
 
 if __name__ == '__main__':
     get_projects_test('pymotw')
