@@ -15,7 +15,6 @@ def get_tasks(db_filename='todo.db', task_id='%'):
         if task_id == '%':
             query = """
             select id, priority, details, status, deadline from task
-            where id like :task_id
             order by deadline, priority
             """
         else:
@@ -32,19 +31,25 @@ def get_tasks(db_filename='todo.db', task_id='%'):
             task_id, priority, details, status, deadline = row
             rows.append('{:2d} [{:d}] {:<25} [{:<8}] ({})'.format(
                 task_id, priority, details, status, deadline))
-        # print(rows) # disable later
+        print(rows) # disable later
         return rows
 
 def get_projects(db_filename='todo.db', project_name='%'):
 
     with sqlite3.connect(db_filename) as conn:
         cursor = conn.cursor()
-
-        query = """
-        select id, priority, details, status, deadline from task
-        where project = :project_name
-        order by deadline, priority
-        """
+        if project_name == '%':
+            query = """
+            select id, priority, details, status, deadline from task
+            order by deadline, priority
+            """
+        else:
+            
+            query = """
+            select id, priority, details, status, deadline from task
+            where project = :project_name
+            order by deadline, priority
+            """
 
         cursor.execute(query, {'project_name': project_name})
 

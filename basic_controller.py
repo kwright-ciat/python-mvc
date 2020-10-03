@@ -54,6 +54,7 @@ class SimpleHandler(BaseHTTPRequestHandler):
                 file_data = field_item.file.read()
                 file_len = len(file_data)
                 del file_data
+
                 out.write(
                     '\tUploaded {} as {!r} ({} bytes)\n'.format(
                         field, field_item.filename, file_len)
@@ -69,11 +70,24 @@ class SimpleHandler(BaseHTTPRequestHandler):
         out.detach()
     
     def get_endpoints(self, endpoint='/'):
-        if endpoint.endswith('/') or endpoint.endswith('/project'):
-            project_name = 'pymotw'
+        if endpoint.count('/') > 1:
+    
+            endpoints = endpoint.split('/')
+        else:
+            endpoints = [endpoint, '']
+        
+        print (endpoints)
+        if endpoints[0].endswith('/project') and not endpoints[1]:
+            
+            project_name = '%'
             message = (endpoint)
             projects = '\r\n'.join(basic_model.get_projects(project_name=project_name))
+            
             return projects
+        elif endpoints[0].endswith('/task'):
+            task_id = endpoint
+            tasks ='\r\n'.join(basic_model.get_tasks(task_id='%'))
+            return tasks
 
     def do_GET(self):
         parsed_path = parse.urlparse(self.path)

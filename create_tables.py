@@ -20,6 +20,19 @@ with sqlite3.connect(db_filename) as conn:
         values ('pymotw', 'Python Module of the Week',
                 '2016-11-01');
 
+        insert into project (name, description, deadline)
+        values ('ciat', 'CIS280A Cisco DevNet',
+                '2020-10-01');
+
+        insert into task (details, status, deadline, project)
+        values ('Create python-mvc Git Repository', 'done', '2020-10-02',
+                'ciat');
+
+        insert into task (details, status, deadline, project)
+        values ('Get basic /project and /task API endpoints working', 'wip', '2020-10-03',
+                'ciat');
+
+ 
         insert into task (details, status, deadline, project)
         values ('write about select', 'done', '2016-04-25',
                 'pymotw');
