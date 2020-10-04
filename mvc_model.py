@@ -89,7 +89,7 @@ def get_projects_test(project_name_value='pymotw'):
         print('no projects named "{}"'.format(project_name_value))
     print()
 
-if __name__ == '__main__':
+def run_all_test():
     get_projects_test('pymotw')
     get_projects_test('ciat')
     get_projects_test()
@@ -97,3 +97,6 @@ if __name__ == '__main__':
     get_tasks_test('15')
     get_tasks_test()   
     
+    
+if __name__ == '__main__':
+    run_all_test()
