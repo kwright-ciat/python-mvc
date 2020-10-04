@@ -12,3 +12,5 @@ docker tag 3d4a064326fd pymvc:2.0
 docker run -p 8080:8080 --name mvc1 pymvc
 docker inspect mvc1
 docker logs mvc1
+docker build -t pymvc:lastest .
+docker images
