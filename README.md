@@ -1,7 +1,8 @@
 # python-mvc
 * Demonstrate MVC design pattern 
-* Use Python 3.7 in a virtual environment
 * Use Test Driven Development to facilitate the design
+* Use Python 3.7 in a virtual environment
+* Use SQLite3 for a serverless database
 
 ## To start the application execute:
 
