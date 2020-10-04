@@ -13,6 +13,6 @@
 
 ## To test each of the mvc components, you can execute them, instead of importing them:
 
-#### ./mvc_view.py
 #### ./mvc_model.py
+#### ./mvc_view.py
 #### ./mvc_controller.py
