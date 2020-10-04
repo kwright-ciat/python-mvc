@@ -133,4 +133,6 @@ RUN set -ex; \
 
 EXPOSE 8080
 
-CMD ["python3", "mvc_app.py"]
+ADD . / pymvc/
+
+CMD ["python3", "/pymvc/mvc_app.py"]
