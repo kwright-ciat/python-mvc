@@ -1,4 +1,15 @@
 #!bin/python3
+'''
+This module implements the Controller in the MVC design pattern 
+
+MVC Controllers only communicate with the Model and the View.
+To use the module, it should be imported by the View module,
+and when the MVC View module makes requests through function calls,
+this Controller will respond to the View.
+
+This Controller imports the MVC module, so that it can make 
+requests of the functions of the MVC Model module.  
+'''
 # customize the above shebang to your environment
 import mvc_model
 
