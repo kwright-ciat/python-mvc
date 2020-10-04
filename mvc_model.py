@@ -1,5 +1,15 @@
 #!bin/python3
+'''
+This module implements the Model in the MVC design pattern 
 
+MVC Models only communicate with the Controller.
+To use the module, it should be imported by the Controller module
+and when the MVC View module makes requests through function calls,
+the Controller will make function calls to this Model module.
+
+This Controller imports a module named mvc_module_create, so that the 
+database with db_filename gets created.  
+'''
 # sqlite3_argument_named.py
 import sqlite3
 import sys
