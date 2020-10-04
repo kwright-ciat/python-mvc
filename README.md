@@ -11,8 +11,11 @@
 
 #### ./mvc_view_test.sh
 
-## To test each of the mvc components, you can execute them, instead of importing them:
+## To test each of the mvc components except the mvc_view.py, you can execute them, instead of importing them:
 
 #### ./mvc_model.py
-#### ./mvc_view.py
 #### ./mvc_controller.py
+
+## To test the mvc_view.py use the script that tests the applicaton: 
+
+#### ./mvc_view_test.sh
