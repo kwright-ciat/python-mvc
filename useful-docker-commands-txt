@@ -1,0 +1,15 @@
+docker stop d94455e0dc64
+docker ps
+docker stop practical_beaver
+docker ps
+docker stop clever_lewin
+docker ps
+docker exec -it hopeful_liskov bash
+docker ps
+docker ps
+docker tag 3d4a064326fd pymvc:2.0
+docker tag 3d4a064326fd pymvc:latest
+docker images
+history | grep docker
+history | grep docker | cut -c8-
+history | grep docker | cut -c8- > useful-docker-commands-txt
