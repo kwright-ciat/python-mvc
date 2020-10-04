@@ -1,4 +1,4 @@
-#!bin/python3
+#!bin/python
 # customize the above shebang to your environment
 from urllib import parse
 import cgi

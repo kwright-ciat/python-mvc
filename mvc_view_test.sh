@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 # To test mvc_view.py, first execute that script, and then run this one.
 
 curl -D - http://localhost:8080/project

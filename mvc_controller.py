@@ -1,4 +1,4 @@
-#!bin/python3
+#!bin/python
 '''
 This module implements the Controller in the MVC design pattern 
 

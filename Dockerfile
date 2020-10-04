@@ -1,13 +1,12 @@
 #
-# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
+# NOTE: THIS DOCKERFILE
 #
-# PLEASE DO NOT EDIT IT DIRECTLY.
+# PLEASE DO NOT EDIT
 #
 
 FROM buildpack-deps:buster
 
 # ensure local python is preferred over distribution python
-ENV PATH /usr/local/bin:$PATH
 
 # http://bugs.python.org/issue19846
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
@@ -133,6 +132,13 @@ RUN set -ex; \
 
 EXPOSE 8080
 
-ADD . / pymvc/
+COPY . /pymvc
 
-CMD ["python3", "/pymvc/mvc_app.py"]
+ENV PATH /usr/local/bin:$PATH:/pymvc
+
+RUN cd /pymvc && \
+    . bin/activate && \
+    python mvc_model_create.py 
+
+CMD cd /pymvc && python mvc_view.py
+
