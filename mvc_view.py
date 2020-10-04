@@ -1,12 +1,11 @@
 #!bin/python3
 # customize the above shebang to your environment
 from urllib import parse
-import create_tables
 import cgi
 from http.server import BaseHTTPRequestHandler
 import io
 
-import basic_controller
+import mvc_controller
 
 port = 8080
 
@@ -96,7 +95,7 @@ class SimpleHandler(BaseHTTPRequestHandler):
             )
         message_parts = '\r\n'.join(message_parts) 
         endpoint = parsed_path.path
-        data = basic_controller.get_endpoints(endpoint)
+        data = mvc_controller.get_endpoints(endpoint)
         if not data:
             data = 'No records found.'
 

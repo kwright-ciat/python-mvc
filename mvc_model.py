@@ -3,9 +3,7 @@
 # sqlite3_argument_named.py
 import sqlite3
 import sys
-import create_tables
-#db_filename = 'todo.db'
-#project_name = sys.argv[1]
+import mvc_model_create
 
 def get_tasks(db_filename='todo.db', task_id='%'):
 

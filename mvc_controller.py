@@ -1,7 +1,6 @@
 #!bin/python3
 # customize the above shebang to your environment
-import create_tables
-import basic_model
+import mvc_model
 
 def get_endpoints(endpoint='/'):
     if '/' in endpoint:
@@ -12,11 +11,11 @@ def get_endpoints(endpoint='/'):
     if endpoints[1] == 'project': 
         if len(endpoints) < 3:
             project_name = '%'
-            projects = '\r\n'.join(basic_model.get_projects(project_name=project_name))
+            projects = '\r\n'.join(mvc_model.get_projects(project_name=project_name))
         else:
             project_name = endpoints[2]
             if project_name.isalpha():
-                projects = '\r\n'.join(basic_model.get_projects(project_name=project_name))
+                projects = '\r\n'.join(mvc_model.get_projects(project_name=project_name))
             else:
                 projects = None 
         
@@ -27,7 +26,7 @@ def get_endpoints(endpoint='/'):
             task_id = '%'
         else:
             task_id = endpoints[2]
-        tasks ='\r\n'.join(basic_model.get_tasks(task_id=task_id))
+        tasks ='\r\n'.join(mvc_model.get_tasks(task_id=task_id))
         return tasks
 
 def get_endpoints_test():
