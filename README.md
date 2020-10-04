@@ -3,7 +3,9 @@
 * Use Test Driven Development to facilitate the design
 * Use Python 3.7 in a virtual environment
 * Use SQLite3 for a serverless database
+* Use Dockerfile to implement a container
 
+# Application Testing
 ## To start the application execute:
 
 #### ./mvc_app.sh
@@ -20,3 +22,19 @@
 ## To test the mvc_view.py use the script that tests the applicaton: 
 
 #### ./mvc_view_test.sh
+
+# Docker Testing
+## To build image with a tag of "pymvc:latest" for an image name of pymvc with a version of latest:
+
+#### docker build -t pymvc:lastest .
+
+## To run a container named "mvc1" using the "pymvc" image which maps the host port 8080 to the container 8080:
+
+#### docker run -p 8080:8080 --name mvc1 pymvc 
+
+## To test the "mvc1" container from the host computer:
+
+#### curl http://localhost:8080/project
+#### curl http://localhost:8080/project/ciat
+#### curl http://localhost:8080/task
+#### curl http://localhost:8080/task/5
