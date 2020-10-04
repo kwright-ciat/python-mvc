@@ -131,4 +131,6 @@ RUN set -ex; \
 		\) -exec rm -rf '{}' +; \
 	rm -f get-pip.py
 
-CMD ["python3"]
+EXPOSE 8080
+
+CMD ["python3", "mvc_app.py"]
