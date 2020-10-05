@@ -11,9 +11,12 @@ This Controller imports a module named mvc_module_create, so that the
 database with db_filename gets created.  
 '''
 # sqlite3_argument_named.py
+import random
 import sqlite3
 import sys
 import mvc_model_create
+
+db_filename='todo.db'
 
 def get_tasks(db_filename='todo.db', task_id='%'):
 
@@ -71,7 +74,73 @@ def get_projects(db_filename='todo.db', project_name='%'):
         # print(rows) # disable later
         return rows
 
-def get_tasks_test(task_id_value='%'):
+def add_project(project_name, description='Simple project', deadl
+ine=None):
+    ''' Add a new project
+    '''
+    
+    with sqlite3.connect(db_filename) as conn:
+        cursor = conn.cursor()
+        if project_name.isalnum:
+            query = """
+            insert into project (name, description, deadline)
+            values ('{}', '{}', '{}');
+            """.format(project_name, description, deadline) 
+        else:
+            query = ""
+
+        print (query)
+        cursor.execute(query)
+     
+        if query:
+            query = """
+            select name, description, deadline
+            from project 
+            where name = '{}' 
+            """.format(project_name)
+
+            print (query)
+            cursor.execute(query)
+            row = cursor.fetchall()
+            print (row)
+            return row
+
+def test_add_project(project_name, description='Simple project', deadline=None):
+    ''' test adding a project 
+
+        insert into project (name, description, deadline)
+        values ('ciat', 'CIS280A',
+                '2020-10-01');
+    '''
+     
+    project_name = str(random.randint(1,10000))
+    with sqlite3.connect(db_filename) as conn:
+        cursor = conn.cursor()
+        if project_name.isalnum:
+            query = """
+            insert into project (name, description, deadline)
+            values ('{}', '{}', '{}');
+            """.format(project_name, description, deadline) 
+        else:
+            query = ""
+
+        print (query)
+        cursor.execute(query)
+     
+        if query:
+            query = """
+            select name, description, deadline
+            from project 
+            where name = '{}' 
+            """.format(project_name)
+
+            print (query)
+            cursor.execute(query)
+            row = cursor.fetchall()
+            print (row)
+            return row
+
+def test_get_tasks(task_id_value='%'):
     lines = get_tasks(task_id=task_id_value)
     if len(lines) > 0:
         for line in lines:
@@ -80,7 +149,7 @@ def get_tasks_test(task_id_value='%'):
         print('no tasks with a task id of "{}"'.format(task_id_value))
     print()
 
-def get_projects_test(project_name_value='pymotw'):
+def test_get_projects(project_name_value='pymotw'):
     lines = get_projects(project_name=project_name_value)
     if len(lines) > 0:
         for line in lines:
@@ -89,14 +158,16 @@ def get_projects_test(project_name_value='pymotw'):
         print('no projects named "{}"'.format(project_name_value))
     print()
 
-def run_all_test():
-    get_projects_test('pymotw')
-    get_projects_test('ciat')
-    get_projects_test()
-    get_tasks_test('1')
-    get_tasks_test('15')
-    get_tasks_test()   
-    
-    
+def test_all():
+    test_get_projects('pymotw')
+    test_get_projects('ciat')
+    test_get_projects()
+    test_get_tasks('1')
+    test_get_tasks('15')
+    test_get_tasks()   
+
+        
 if __name__ == '__main__':
-    run_all_test()
+    random.seed()
+    test_all()
+
