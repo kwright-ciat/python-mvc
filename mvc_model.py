@@ -74,8 +74,7 @@ def get_projects(db_filename='todo.db', project_name='%'):
         # print(rows) # disable later
         return rows
 
-def add_project(project_name, description='Simple project', deadl
-ine=None):
+def add_project(project_name, description='Simple project', deadline=None):
     ''' Add a new project
     '''
     
