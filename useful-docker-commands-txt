@@ -14,3 +14,57 @@ docker inspect mvc1
 docker logs mvc1
 docker build -t pymvc:lastest .
 docker images
+
+Windows Issues using container
+
+On Windows the IP address may not match the container IP address
+
+wrigh@x751s MINGW64 /c/Program Files/Docker Toolbox
+$ curl 172.17.0.2:8080/project
+
+The docker-machine ip command will show the correct IP to connect
+
+wrigh@x751s MINGW64 /c/Program Files/Docker Toolbox
+$ docker-machine.exe  ip
+192.168.99.101
+
+Be sure to use the correct port, 8080, or your connection is refused
+
+wrigh@x751s MINGW64 /c/Program Files/Docker Toolbox
+$ curl 192.168.99.101/project
+curl: (7) Failed to connect to 192.168.99.101 port 80: Connection refused
+
+Using the correct IP:port:endpoint results in success!
+
+wrigh@x751s MINGW64 /c/Program Files/Docker Toolbox
+$ curl 192.168.99.101:8080/project
+endpoint
+/project
+CLIENT VALUES:
+client_address=('192.168.99.1', 1332) (192.168.99.1)
+command=GET
+path=/project
+real path=/project
+query=
+request_version=HTTP/1.1
+
+SERVER VALUES:
+server_version=BaseHTTP/0.6
+sys_version=Python/3.7.9
+protocol_version=HTTP/1.0
+
+HEADERS RECEIVED:
+
+
+Accept=*/*
+Host=192.168.99.101:8080
+User-Agent=curl/7.71.1
+
+Project Tasks
+
+ciat CIS280A Cisco DevNet      (2020-10-01)
+pymotw Python Module of the Week (2016-11-01)
+
+
+wrigh@x751s MINGW64 /c/Program Files/Docker Toolbox
+$
