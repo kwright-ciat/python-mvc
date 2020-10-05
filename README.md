@@ -38,3 +38,12 @@
 #### curl http://localhost:8080/project/ciat
 #### curl http://localhost:8080/task
 #### curl http://localhost:8080/task/5
+
+# Windows Docker Issues
+* Docker on Windows 10 connects to the container differently than Linux.
+* Using the docker-machine.exe  ip will show your IP usually, 192.168.99.101.
+* Use the curl command to test the app
+** curl 192.168.99.101:8080/project
+** curl 192.168.99.101:8080/project/ciat
+** curl 192.168.99.101:8080/task
+** curl 192.168.99.101:8080/task1
