@@ -74,13 +74,13 @@ def get_projects(db_filename='todo.db', project_name='%'):
         # print(rows) # disable later
         return rows
 
-def add_project(project_name, description='Simple project', deadline=None):
+def add_project(fields):
     ''' Add a new project
     '''
     
     with sqlite3.connect(db_filename) as conn:
         cursor = conn.cursor()
-        if project_name.isalnum:
+        if project_name.isalnum():
             query = """
             insert into project (name, description, deadline)
             values ('{}', '{}', '{}');
