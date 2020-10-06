@@ -84,7 +84,8 @@ def add_project(fields):
             query = """
             insert into project (name, description, deadline)
             values ('{}', '{}', '{}');
-            """.format(project_name, description, deadline) 
+            """.format(fields['project_name'], 
+                fields['description'], fields['deadline']) 
         else:
             query = ""
 
@@ -162,11 +163,11 @@ def test_get_projects(project_name_value='pymotw'):
 def test_all():
     test_get_projects('pymotw')
     test_get_projects('ciat')
-    test_get_projects()
     test_get_tasks('1')
     test_get_tasks('15')
     test_get_tasks()   
     test_add_project()
+    test_get_projects()
         
 if __name__ == '__main__':
     random.seed()

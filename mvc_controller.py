@@ -23,11 +23,11 @@ def post_endpoints(fields, endpoint='/'):
     else:
         endpoints = ['', endpoint[1:], '']
     
-    if endpoints[1] == 'project': 
-        if len(endpoints) < 3:
+    if endpoints[1] == 'project' and endpoints[2] == 'create': 
+        if len(endpoints) < 4:
             projects = None
         else:
-            project_name = endpoints[2]
+            project_name = endpoints[3]
             print (project_name)
             if project_name.isalpha():
                 projects = '\r\n'.join(mvc_model.add_project(fields))

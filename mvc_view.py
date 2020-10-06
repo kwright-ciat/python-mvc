@@ -65,8 +65,13 @@ class SimpleHandler(BaseHTTPRequestHandler):
         # Disconnect our encoding wrapper from the underlying
         # buffer so that deleting the wrapper doesn't close
         # the socket, which is still being used by the server.
+        parsed_path = parse.urlparse(self.path)
+        endpoint = parsed_path.path
+        data = mvc_controller.post_endpoints(fields, endpoint)
+        out.write(data)
         out.detach()
-
+        
+        #
     
 
     def do_GET(self):
@@ -114,7 +119,7 @@ if __name__ == '__main__':
     from http.server import HTTPServer
     server = HTTPServer(('0.0.0.0', port), SimpleHandler)
     print('Starting server, use <Ctrl-C> to stop')
-    # try:
-    server.serve_forever()
-    # except KeyboardInterrupt:
-    #    print ('\nStopping server, goodbye!')
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print ('\nStopping server, goodbye!')
