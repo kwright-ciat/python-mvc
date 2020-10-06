@@ -104,7 +104,7 @@ def add_project(fields):
             print (row)
             return row
 
-def test_add_project(project_name, description='Simple project', deadline=None):
+def test_add_project():
     ''' test adding a project 
 
         insert into project (name, description, deadline)
@@ -113,6 +113,8 @@ def test_add_project(project_name, description='Simple project', deadline=None):
     '''
      
     project_name = str(random.randint(1,10000))
+    description = 'Test add project'
+    deadline = '2020-10-31'
     with sqlite3.connect(db_filename) as conn:
         cursor = conn.cursor()
         if project_name.isalnum:
@@ -164,7 +166,7 @@ def test_all():
     test_get_tasks('1')
     test_get_tasks('15')
     test_get_tasks()   
-
+    test_add_project()
         
 if __name__ == '__main__':
     random.seed()
