@@ -11,6 +11,8 @@ This Controller imports the MVC module, so that it can make
 requests of the functions of the MVC Model module.  
 '''
 
+from pprint import pprint
+
 import mvc_model
 
 def validate_project_fields(fields):
@@ -22,25 +24,27 @@ def validate_project_fields(fields):
     
     valid_project = ['project_name','description','deadline']
     valid_fields = []
+    invalid_fields = []
     for field in fields:
         if field not in valid_project:
-            return 400
+            invalid_fields.append(field)
         else:
             valid_fields.append(field)
             
         if field == valid_project[0]:
             project_name = fields[field]
             if not project_name.isalnum():
-                return 400
+                invalid_fields.append(field)
         elif field == valid_project[1]:
             description = fields[field]
             if not description.isprintable():
-                return 400
+                invalid_fields.append(field)
         elif field == valid_project[2]:
             description = fields[field]
             if not description.isprintable():
-                return 400
-        return valid_fields
+                invalid_fields.append(field)
+    else:
+        return valid_fields, invalid_fields
             
 def post_endpoints(fields, endpoint='/'):
     print(fields, endpoint)
@@ -52,7 +56,7 @@ def post_endpoints(fields, endpoint='/'):
     else:
         endpoints = ['', endpoint[1:], '']
     
-    print (test_validate_project_fields(fields))
+    print (validate_project_fields(fields))
     if endpoints[1] == 'project' and endpoints[2] == 'create': 
         if len(endpoints) < 4:
             projects = 400
@@ -98,19 +102,29 @@ def test_get_endpoints():
             '/task/1', '/task/3', '/bogus', '/bogus/1']
     for test in tests:
         print('Testing get_endpoints {}'.format(test))
-        print(get_endpoints(test))
+        result = get_endpoints(test)
+        if result == 400:
+            exit(400)
+            
 
 def test_post_endpoints():
     tests = ['/project/create?project_name=CREATE','/project/create?project_name=C4CREATE']
     for test in tests:
         print('Testing post_endpoints {}'.format(test))
-        print(post_endpoints({'project_name': 'Create'},test))
+        print(post_endpoints({'project_name': 'Create', 'description': 'test_post_endpoints', 'deadline':'2112-12-12'},test))
         
-def test_validate_project_fields(fields):
-    print('Testing test_validate_project_fields({}', test_validate_project_fields({})) 
-    return validate_project_fields()
+def test_validate_project_fields():
+    field_list =[ {'project_name': 'Create', 'description': 'test_post_endpoints', 'deadline':'2112-12-12'},
+                   {'project_name': '*', 'description': 'test_post_endpoints', 'deadline':'2112-12-12'}
+                ]
+    print('Testing test_validate_project_fields(fields)') 
+    pprint(field_list) 
+    for field in field_list:
+        print('Testing test_validate_project_fields({})'.format(field))
+        print('Result of test', validate_project_fields(field))
 
 if __name__ == '__main__':
+    test_validate_project_fields()
     test_get_endpoints()
     test_post_endpoints()
-    test_validate_project_fields({})
+
