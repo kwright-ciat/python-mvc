@@ -1,5 +1,9 @@
 #!bin/python
-# customize the above shebang to your environment
+'''
+Presents a MVC View to client 
+
+Only communicates with the Controller and client.
+'''
 from urllib import parse
 import cgi
 from http.server import BaseHTTPRequestHandler
@@ -9,8 +13,10 @@ import mvc_controller
 
 port = 8080
 
+
 class SimpleHandler(BaseHTTPRequestHandler):
     ''' Handler for both POST and GET requests '''        
+
     def do_POST(self):
         # Parse the form data posted
         form = cgi.FieldStorage(
@@ -72,7 +78,6 @@ class SimpleHandler(BaseHTTPRequestHandler):
         out.detach()
         
         #
-    
 
     def do_GET(self):
         parsed_path = parse.urlparse(self.path)
@@ -106,13 +111,12 @@ class SimpleHandler(BaseHTTPRequestHandler):
             data = 'No records found.'
 
         message_title = '\r\nProject Tasks\r\n'
-        message = '\r\n'.join(('endpoint', endpoint, message_parts, message_title, data,'\r\n'))
+        message = '\r\n'.join(('endpoint', endpoint, message_parts, message_title, data, '\r\n'))
         self.send_response(200)
         self.send_header('Content-Type',
                          'text/plain; charset=utf-8')
         self.end_headers()
         self.wfile.write(message.encode('utf-8'))
-
 
 
 if __name__ == '__main__':
