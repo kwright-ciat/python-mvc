@@ -112,7 +112,7 @@ class SimpleHandler(BaseHTTPRequestHandler):
                 )
             message_parts = '\r\n'.join(message_parts) 
         else:
-            message_parts = []
+            message_parts = '\r\n'
         endpoint = parsed_path.path
         data = mvc_controller.get_endpoints(endpoint)
         if not data:
