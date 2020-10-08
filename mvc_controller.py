@@ -40,8 +40,8 @@ def validate_project_fields(fields):
             if not description.isprintable():
                 invalid_fields.append(field)
         elif field == valid_project[2]:
-            description = fields[field]
-            if not description.isprintable():
+            deadline = fields[field]
+            if not deadline.isprintable():
                 invalid_fields.append(field)
     else:
         return valid_fields, invalid_fields
