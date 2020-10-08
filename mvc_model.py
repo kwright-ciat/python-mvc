@@ -50,7 +50,6 @@ def create_db(db_filename=db_filename_default):
             values ('Get basic /project and /task API endpoints working', 'wip', '2020-10-03',
                     'ciat');
     
-     
             insert into task (details, status, deadline, project)
             values ('write about select', 'done', '2016-04-25',
                     'pymotw');
@@ -161,7 +160,6 @@ def add_project(fields, db_filename=db_filename_default):
     
             print (query)
             result = cursor.execute(query)
-            print (result)
             return result
 
 def test_add_project(db_filename=db_filename_default):
@@ -181,6 +179,7 @@ def test_add_project(db_filename=db_filename_default):
     add_project(fields)
     
 def test_get_tasks(task_id_value='%'):
+    ''' Test getting tasks ''' 
     lines = get_tasks(task_id=task_id_value)
     if len(lines) > 0:
         for line in lines:
@@ -189,7 +188,8 @@ def test_get_tasks(task_id_value='%'):
         print('no tasks with a task id of "{}"'.format(task_id_value))
     print()
 
-def test_get_projects(project_name_value='pymotw'):
+def test_get_projects(project_name_value='%'):
+    ''' Test getting projects ''' 
     lines = get_projects(project_name=project_name_value)
     if len(lines) > 0:
         for line in lines:
@@ -199,6 +199,7 @@ def test_get_projects(project_name_value='pymotw'):
     print()
 
 def test_all():
+    ''' Perform all tests for this module. '''
     test_get_projects('pymotw')
     test_get_projects('ciat')
     test_get_tasks('1')
@@ -208,6 +209,7 @@ def test_all():
     test_get_projects()
         
 if __name__ == '__main__':
+    ''' Execute statements below if run directly, but not when module is imported '''
     if not exists_db(db_filename_default): create_db()
     random.seed()
     test_all()

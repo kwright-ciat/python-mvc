@@ -9,6 +9,7 @@ import cgi
 from http.server import BaseHTTPRequestHandler
 from http.server import HTTPServer
 import io
+import traceback
 
 import mvc_controller
 
@@ -138,9 +139,14 @@ def start_server(ip=ip_default, port=port_default):
     try:
         server = HTTPServer((ip, port), SimpleHandler)
         server.serve_forever()
-        test_do_GET()
     except KeyboardInterrupt:
         print ('\nStopping server, goodbye!')
+    except OSError:
+        # OSError: [WinError 10049] The requested address is not valid in its context
+        print('Requested address is not valid in its context')
+    except Exception:
+        print('Printing Traceback: Unhandled Exception occurred\n')
+        traceback.print_exc()
     else:
         pass
     finally:
