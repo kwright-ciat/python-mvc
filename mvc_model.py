@@ -10,60 +10,63 @@ the Controller will make function calls to this Model module.
 This Controller imports a module named mvc_module_create, so that the 
 database with db_filename gets created.  
 '''
+
+from datetime import datetime
 import os
 import random
 import sqlite3
 import sys
 
-db_filename_default='todo.db'
-schema_filename = 'todo_schema.sql'
+from mvc_app import ISO_8601_DATE, db_filename_default, schema_filename_default, testing
 
 def exists_db(db_filename=db_filename_default):
     db_exists = os.path.exists(db_filename)
     return db_exists
     
-def create_db(db_filename=db_filename_default):
+def create_db(db_filename=db_filename_default, schema_filename=schema_filename_default):
     with sqlite3.connect(db_filename) as conn:
         cursor = conn.cursor()
-        if exists_db():
-            print('Creating schema')
-            with open(schema_filename, 'rt') as f:
-                schema = f.read()
-            cursor.executescript(schema)
-    
+        print('Creating schema')
+        with open(schema_filename, 'rt') as f:
+            schema = f.read()
+            
+        if testing:
+            print('Schema file: {}'.format(schema))
             print('Inserting initial data')
-    
-            conn.executescript("""
-            insert into project (name, description, deadline)
-            values ('pymotw', 'Python Module of the Week',
-                    '2016-11-01');
-    
-            insert into project (name, description, deadline)
-            values ('ciat', 'CIS280A Cisco DevNet',
-                    '2020-10-01');
-    
-            insert into task (details, status, deadline, project)
-            values ('Create python-mvc Git Repository', 'done', '2020-10-02',
-                    'ciat');
-    
-            insert into task (details, status, deadline, project)
-            values ('Get basic /project and /task API endpoints working', 'wip', '2020-10-03',
-                    'ciat');
-    
-            insert into task (details, status, deadline, project)
-            values ('write about select', 'done', '2016-04-25',
-                    'pymotw');
-    
-            insert into task (details, status, deadline, project)
-            values ('write about random', 'waiting', '2016-08-22',
-                    'pymotw');
-    
-            insert into task (details, status, deadline, project)
-            values ('write about sqlite3', 'active', '2017-07-31',
-                    'pymotw');
-            """)
-        else:
-            print('Database exists, assume schema does, too.')
+        cursor.executescript(schema)
+        
+
+
+#         conn.executescript("""
+#         insert into project (name, description, deadline)
+#         values ('pymotw', 'Python Module of the Week',
+#                 '2016-11-01');
+# 
+#         insert into project (name, description, deadline)
+#         values ('ciat', 'CIS280A Cisco DevNet',
+#                 '2020-10-01');
+# 
+#         insert into task (details, status, deadline, project)
+#         values ('Create python-mvc Git Repository', 'done', '2020-10-02',
+#                 'ciat');
+# 
+#         insert into task (details, status, deadline, project)
+#         values ('Get basic /project and /task API endpoints working', 'wip', '2020-10-03',
+#                 'ciat');
+# 
+#         insert into task (details, status, deadline, project)
+#         values ('write about select', 'done', '2016-04-25',
+#                 'pymotw');
+# 
+#         insert into task (details, status, deadline, project)
+#         values ('write about random', 'waiting', '2016-08-22',
+#                 'pymotw');
+# 
+#         insert into task (details, status, deadline, project)
+#         values ('write about sqlite3', 'active', '2017-07-31',
+#                 'pymotw');
+#         """)
+
         
 def get_tasks(db_filename=db_filename_default, task_id='%'):
 
@@ -81,7 +84,9 @@ def get_tasks(db_filename=db_filename_default, task_id='%'):
                 where id = {}
                 order by deadline, priority
                 """.format(task_id)
-            print(query)
+            
+            if testing:
+                print(query)
             cursor.execute(query)
     
             rows = []
@@ -89,7 +94,8 @@ def get_tasks(db_filename=db_filename_default, task_id='%'):
                 task_id, priority, details, status, deadline = row
                 rows.append('{:2d} [{:d}] {:<25} [{:<8}] ({})'.format(
                     task_id, priority, details, status, deadline))
-            # print(rows) # disable later
+                if testing:
+                    print(rows) 
             return rows
 
 def get_projects(db_filename=db_filename_default, project_name='%'):
@@ -108,7 +114,8 @@ def get_projects(db_filename=db_filename_default, project_name='%'):
                 from project where name = "{}"
                 """.format(project_name)
         
-            print (query)
+            if testing:
+                print (query)
             cursor.execute(query)
         
             rows = []
@@ -133,6 +140,8 @@ def add_project(fields, db_filename=db_filename_default):
         project_name = fields['project_name']
         description = fields['description']
         deadline = fields['deadline']
+        
+        print (project_name, description, deadline)
     except KeyError:
         print ('add_project Required field missing')
         return 400
@@ -143,8 +152,7 @@ def add_project(fields, db_filename=db_filename_default):
             query = """
             insert into project (name, description, deadline)
             values ('{}', '{}', '{}');
-            """.format(fields['project_name'], 
-                fields['description'], fields['deadline']) 
+            """.format(project_name, description, deadline) 
         else:
             query = ""
     
@@ -169,17 +177,27 @@ def test_add_project(db_filename=db_filename_default):
         values ('ciat', 'CIS280A',
                 '2020-10-01');
     '''
+    
+    testing = True
      
     project_name = str(random.randint(1,10000))
     description = 'Test add project'
-    deadline = '2020-10-31'
+    deadline = datetime.strftime( datetime.now(), ISO_8601_DATE)
+    #deadline = '2112-12-12'
+    #deadline = '2112-12-12T12:12:12Z'
+    
+    #deadline = datetime.strftime( datetime.now(), ISO_8601_DATE)
     
     fields = { 'project_name': project_name, 'description': description, 'deadline': deadline }
-    print (fields)
+    if testing:
+        print (fields)
     add_project(fields)
     
 def test_get_tasks(task_id_value='%'):
     ''' Test getting tasks ''' 
+    
+    testing = True
+        
     lines = get_tasks(task_id=task_id_value)
     if len(lines) > 0:
         for line in lines:
@@ -190,6 +208,9 @@ def test_get_tasks(task_id_value='%'):
 
 def test_get_projects(project_name_value='%'):
     ''' Test getting projects ''' 
+    
+    testing = True
+        
     lines = get_projects(project_name=project_name_value)
     if len(lines) > 0:
         for line in lines:
@@ -210,7 +231,8 @@ def test_all():
         
 if __name__ == '__main__':
     ''' Execute statements below if run directly, but not when module is imported '''
-    if not exists_db(db_filename_default): create_db()
+    if not exists_db(db_filename_default): 
+        create_db()
     random.seed()
     test_all()
 

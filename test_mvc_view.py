@@ -3,7 +3,7 @@
 Test endpoints of the mvc_view
 
 '''
-from mvc_view import ip_default, port_default, start_server
+from mvc_view import ip_default, port_default
 import http.client
 import mimetypes
 

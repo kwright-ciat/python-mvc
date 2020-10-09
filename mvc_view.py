@@ -11,12 +11,9 @@ from http.server import HTTPServer
 import io
 import traceback
 
+
+from mvc_app import ip_default, port_default, testing
 import mvc_controller
-
-port_default = 8080
-ip_default = '0.0.0.0'
-
-testing = False
 
 class SimpleHandler(BaseHTTPRequestHandler):
     ''' Handler for both POST and GET requests '''        
