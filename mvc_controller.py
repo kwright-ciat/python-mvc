@@ -12,9 +12,12 @@ requests of the functions of the MVC Model module.
 '''
 
 from pprint import pprint
+from datetime import datetime
+import random
 
-from mvc_app import testing
+from mvc_app import testing, ISO_8601_DATE
 import mvc_model
+from _sqlite3 import IntegrityError
 
 
 
@@ -30,29 +33,37 @@ def validate_project_fields(fields):
     invalid_fields = []
     for field in fields:
         if field not in valid_project:
+            print('Invalid field {}\n'.format(field))
             invalid_fields.append(field)
         else:
+            print('Valid field {}\n'.format(field))
             valid_fields.append(field)
             
         if field == valid_project[0]:
             project_name = fields[field]
             if not project_name.isalnum():
+                print('Invalid project_name\n')
                 invalid_fields.append(field)
         elif field == valid_project[1]:
             description = fields[field]
             if not description.isprintable():
+                print('Invalid description\n')
                 invalid_fields.append(field)
         elif field == valid_project[2]:
             deadline = fields[field]
             if not deadline.isprintable():
+                print('Invalid deadline\n')
                 invalid_fields.append(field)
     else: # this is executed when the for loop reaches the end of the fields list
         if len(invalid_fields) > 0:
+            print('Invalid fields {}\n'.format(invalid_fields))
             return 400, invalid_fields
-        return 200, valid_fields
+        else:
+            print('Return valid fields {}\n'.format(invalid_fields))
+            return 200, valid_fields
             
 def post_endpoints(fields, endpoint='/'):
-    print(fields, endpoint)
+    print('mvc_controller.py post_endpoints endpoint {}, fields {}\n'.format(endpoint,fields))
     if '?' in endpoint:
         qm = endpoint.index('?')
         endpoint = endpoint[:qm] # delete the question mark and everything after it
@@ -61,19 +72,22 @@ def post_endpoints(fields, endpoint='/'):
     else:
         endpoints = ['', endpoint[1:], '']
     
-    print ('\nvalidate_project_fields:\n', validate_project_fields(fields))
-    if endpoints[1] == 'project' and endpoints[2] == 'create': 
-        if len(endpoints) < 4:
-            projects = (400, fields)
+    print ('\nmvc_controller.py post_endpoint Validate_project_fields:\n', validate_project_fields(fields))
+    if endpoints[1].lower() == 'project' and endpoints[2].lower() == 'create': 
+        print ('\nmvc_controller.py post_endpoint Validate_project_fields: {}\n'.format(fields))
+        status_code, valid_fields = validate_project_fields(fields)
+        print (status_code, fields)
+        if status_code == 400:
+            print ('\nmvc_controller.py post_endpoint Invalid_project_fields: {}\n'.format(fields))
+            return 400
         else:
-            project_name = endpoints[3]
-            print (project_name)
-            if project_name.isalnum():
-                projects = '\r\n'.join(mvc_model.add_project(fields))
-            else:
-                projects = 400 
-        
-        return projects
+            project_name = fields['project_name']
+            print ('\nmvc_controller.py post_endpoint project_name: {}'.format(project_name))
+            new_project = mvc_model.add_project(fields)
+            if new_project[0] == 'IntegrityError':
+                print('Duplicate project name')
+                return new_project
+        return new_project
 
 def get_endpoints(endpoint='/'):
     if '/' in endpoint:
@@ -116,12 +130,17 @@ def test_get_endpoints():
             
 
 def test_post_endpoints():
-    fields = {'project_name': 'Create', 'description': 'test_post_endpoints', 'deadline':'2012-12-12'}
+    fields = {'project_name': 'Create', 'description': 'mvc_controller.py test_post_endpoints', 'deadline':'2012-12-12'}
     
-    tests = ['/project/create?project_name=CREATE','/project/create?project_name=C4CREATE']
+    project_name = str(random.randint(1,10000))
+    description = 'Test project {}'.format(project_name)
+    deadline = datetime.strftime( datetime.now(), ISO_8601_DATE)
+    random_fields = {'project_name': project_name, 'description': description, 'deadline': deadline}
+    tests = ['/project/create']
     for test in tests:
         print('Testing with fields: {}\nfor post_endpoints: {}.'.format(fields,test))
         print(post_endpoints(fields,test))
+        print(post_endpoints(random_fields,test))
         
 def test_validate_project_fields():
     field_list =[ {'project_name': 'Create', 'description': 'test_post_endpoints', 'deadline':'2112-12-12'},
@@ -134,7 +153,7 @@ def test_validate_project_fields():
         print('Result of test', validate_project_fields(field))
 
 if __name__ == '__main__':
-    test_validate_project_fields()
-    test_get_endpoints()
+    # test_validate_project_fields()
+    # test_get_endpoints()
     test_post_endpoints()
 

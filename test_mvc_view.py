@@ -3,24 +3,29 @@
 Test endpoints of the mvc_view
 
 '''
-from mvc_view import ip_default, port_default
+from mvc_app import ip_default, port_default
 import http.client
 import mimetypes
 
-def test_do_GET():
+def test_do_GET(): 
     payload = ''
     headers = {}
     endpoints = ['/project','/project/ciat','/project/pymotw','/project/bogus',
                  '/task', '/task/5','/task/1', '/task/0']
+    
     global ip_default
-    if ip_default == '0.0.0.0': ip_default = '127.0.0.1'
+    if ip_default == '0.0.0.0': 
+        ip_default = '127.0.0.1'
+        
     for endpoint in endpoints:
         print(ip_default, port_default)
         conn = http.client.HTTPConnection(ip_default, port_default)
         conn.request("GET", endpoint, payload, headers)
         res = conn.getresponse()
-        data = res.read()
-        print(data.decode("utf-8"))
+        status_code = res.getcode()
+        data = res.read().decode("utf-8")
+        
+        print('test_mvc_view.py Response Code: {} Response Data: \n{}'.format(status_code, data))
 
         
 if __name__ == '__main__':

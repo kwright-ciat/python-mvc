@@ -86,9 +86,10 @@ def get_tasks(db_filename=db_filename_default, task_id='%'):
                 """.format(task_id)
             
             if testing:
-                print(query)
+                print ('\nmvc_model.py get_task query "{}"\n'.format(query))
             cursor.execute(query)
     
+            print ('\nmvc_model.py get_task query results:\n')
             rows = []
             for row in cursor.fetchall():
                 task_id, priority, details, status, deadline = row
@@ -96,6 +97,7 @@ def get_tasks(db_filename=db_filename_default, task_id='%'):
                     task_id, priority, details, status, deadline))
                 if testing:
                     print(rows) 
+            
             return rows
 
 def get_projects(db_filename=db_filename_default, project_name='%'):
@@ -106,7 +108,7 @@ def get_projects(db_filename=db_filename_default, project_name='%'):
                 query = """
                 select name, description, deadline
                 from project
-                order by name
+                order by deadline
                 """
             else:
                 query = """
@@ -115,11 +117,12 @@ def get_projects(db_filename=db_filename_default, project_name='%'):
                 """.format(project_name)
         
             if testing:
-                print (query)
+                print ('mvc_model.py get_projects query: \n{}\n'.format(query))
             cursor.execute(query)
         
             rows = []
         
+            print ('mvc_model.py get_projects query rows: \n\n')
             for row in cursor.fetchall():
                 print(row)
                 name, description, deadline = row
@@ -128,6 +131,58 @@ def get_projects(db_filename=db_filename_default, project_name='%'):
             # print(rows) # disable later
             return rows
 
+def delete_project(fields, db_filename=db_filename_default):
+    ''' 
+    Delete one new project from the project table.
+    
+    Validate that the field value is a valid string without "%" or "?".
+    In first sprint attempt without checking list of projects.
+    
+    7122
+    '''
+    print('\nmvc_model.py delete_project fields\n{}\n'.format(fields))
+    try:
+        project_name = fields['project_name']
+        print ('\nmvc_model.py delete_project project: {}\n'.format(project_name))
+    except KeyError:
+        print ('\nmvc_model.py delete_project project_name field required')
+        return 400
+    
+    with sqlite3.connect(db_filename) as conn:
+        banned_chars = ('\'', '"', '\\', '//', '%', '?', '+', '-')
+        cursor = conn.cursor()
+        
+        for char in banned_chars:
+            if char in project_name:
+                print ('\nmvc_model.py delete_project project_name banned character.\n') 
+                return 400    
+               
+        if project_name.isalnum() or '_' in project_name  or ' ' in project_name: ## double check after the controller
+            query = """
+            DELETE FROM project
+            WHERE name = '{}';
+            """.format(project_name) 
+        else:
+            query = ""
+    
+        print ('\nmvc_model.py delete_project query: \n{}\n'.format(query))
+        try:
+            cursor.execute(query)
+        except sqlite3.IntegrityError:
+            print ('\nmvc_model.py add_project sqlite3 IntegrityError: Duplicate project name\n')
+            return 'IntegrityError',
+     
+        if query:
+            query = """
+            select name, description, deadline
+            from project 
+            where name = '{}' 
+            """.format(project_name)
+    
+            print ('\nmvc_model.py delete_project query project deleted: \n{}\n'.format(query))
+            result = cursor.execute(query)
+            row = result.fetchone()
+            return row
 def add_project(fields, db_filename=db_filename_default):
     ''' 
     Add a new project to the project table.
@@ -135,15 +190,14 @@ def add_project(fields, db_filename=db_filename_default):
     Validate the fields and values before performing operations.
     
     '''
-    print('add_project fields', fields)
+    print('\nmvc_model.py add_project fields\n{}\n'.format(fields))
     try:
         project_name = fields['project_name']
         description = fields['description']
-        deadline = fields['deadline']
-        
-        print (project_name, description, deadline)
+        deadline = fields['deadline']      
+        print ('\nmvc_model.py adding project: {}\n'.format(project_name, description, deadline))
     except KeyError:
-        print ('add_project Required field missing')
+        print ('\nmvc_model.py add_project Required field missing')
         return 400
     
     with sqlite3.connect(db_filename) as conn:
@@ -156,8 +210,12 @@ def add_project(fields, db_filename=db_filename_default):
         else:
             query = ""
     
-        print (query)
-        cursor.execute(query)
+        print ('\nmvc_model.py add_project query: \n{}\n'.format(query))
+        try:
+            cursor.execute(query)
+        except sqlite3.IntegrityError:
+            print ('\nmvc_model.py add_project sqlite3 IntegrityError: Duplicate project name\n')
+            return 'IntegrityError',
      
         if query:
             query = """
@@ -166,9 +224,10 @@ def add_project(fields, db_filename=db_filename_default):
             where name = '{}' 
             """.format(project_name)
     
-            print (query)
+            print ('\nmvc_model.py add_project query: \n{}\n'.format(query))
             result = cursor.execute(query)
-            return result
+            row = result.fetchone()
+            return row
 
 def test_add_project(db_filename=db_filename_default):
     ''' test adding a project 
@@ -190,20 +249,21 @@ def test_add_project(db_filename=db_filename_default):
     
     fields = { 'project_name': project_name, 'description': description, 'deadline': deadline }
     if testing:
-        print (fields)
-    add_project(fields)
+        print ('\nmvc_model.py add_project fields: \n{}\n'.format(fields))
+    return add_project(fields)
     
 def test_get_tasks(task_id_value='%'):
     ''' Test getting tasks ''' 
     
     testing = True
         
+    print ('\nmvc_model.py test_get_task results  with a task id of "{}":\n'.format(task_id_value))
     lines = get_tasks(task_id=task_id_value)
     if len(lines) > 0:
         for line in lines:
             print(line)
     else:
-        print('no tasks with a task id of "{}"'.format(task_id_value))
+        print('\nmvc_model.py test_get_task no tasks with a task id of "{}"'.format(task_id_value))
     print()
 
 def test_get_projects(project_name_value='%'):
@@ -213,11 +273,18 @@ def test_get_projects(project_name_value='%'):
         
     lines = get_projects(project_name=project_name_value)
     if len(lines) > 0:
+        print ('\nmvc_model.py test_get_projects named "{}"\n'.format(project_name_value))
         for line in lines:
+            
             print(line)
     else:
-        print('no projects named "{}"'.format(project_name_value))
+        print ('\nmvc_model.py test_get_projects: no projects named "{}"\n'.format(project_name_value))
     print()
+    
+def test_delete_project():
+    ''' Delete a sample project '''
+    fields = {'project_name': 'pymotw'}
+    delete_project(fields)
 
 def test_all():
     ''' Perform all tests for this module. '''
@@ -226,8 +293,11 @@ def test_all():
     test_get_tasks('1')
     test_get_tasks('15')
     test_get_tasks()   
-    test_add_project(db_filename_default)
+    test_add_project()
+    test_delete_project()
     test_get_projects()
+    test_get_projects('%')
+    test_get_projects('ciat')
         
 if __name__ == '__main__':
     ''' Execute statements below if run directly, but not when module is imported '''
@@ -235,4 +305,6 @@ if __name__ == '__main__':
         create_db()
     random.seed()
     test_all()
+
+
 
