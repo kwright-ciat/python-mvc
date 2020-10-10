@@ -72,22 +72,46 @@ def post_endpoints(fields, endpoint='/'):
     else:
         endpoints = ['', endpoint[1:], '']
     
-    print ('\nmvc_controller.py post_endpoint Validate_project_fields:\n', validate_project_fields(fields))
-    if endpoints[1].lower() == 'project' and endpoints[2].lower() == 'create': 
-        print ('\nmvc_controller.py post_endpoint Validate_project_fields: {}\n'.format(fields))
-        status_code, valid_fields = validate_project_fields(fields)
-        print (status_code, fields)
-        if status_code == 400:
-            print ('\nmvc_controller.py post_endpoint Invalid_project_fields: {}\n'.format(fields))
-            return 400
-        else:
-            project_name = fields['project_name']
-            print ('\nmvc_controller.py post_endpoint project_name: {}'.format(project_name))
-            new_project = mvc_model.add_project(fields)
-            if new_project[0] == 'IntegrityError':
-                print('Duplicate project name')
-                return new_project
-        return new_project
+    if endpoints[1].lower() == 'project':
+        if endpoints[2].lower() == 'create': 
+            print ('\nmvc_controller.py post_endpoint Validate_project_fields: {}\n'.format(fields))
+            status_code, valid_fields = validate_project_fields(fields)
+            print (status_code, fields)
+            if status_code == 400:
+                print ('\nmvc_controller.py post_endpoint Invalid_project_fields: {}\n'.format(fields))
+                return 400
+            else:
+                project_name = fields['project_name']
+                print ('\nmvc_controller.py post_endpoint project_name: {}'.format(project_name))
+                new_project = mvc_model.add_project(fields)
+                if new_project[0] == 'IntegrityError':
+                    print('Duplicate project name')
+                    return new_project
+            return new_project
+        elif endpoints[2].lower() == 'delete': 
+            print ('\nmvc_controller.py post_endpoint Validate_project_fields: {}\n'.format(fields))
+            status_code, valid_fields = validate_project_fields(fields)
+            print (status_code, fields)
+            if status_code == 400:
+                print ('\nmvc_controller.py post_endpoint Invalid_project_fields: {}\n'.format(fields))
+                return 400
+            else:
+                project_name = fields['project_name']
+                print ('\nmvc_controller.py post_endpoint project_name: {}'.format(project_name))
+                deleted_project = mvc_model.delete_project(fields)
+            return deleted_project  
+        elif endpoints[2].lower() == 'update': 
+            print ('\nmvc_controller.py post_endpoint Validate_project_fields: {}\n'.format(fields))
+            status_code, valid_fields = validate_project_fields(fields)
+            print (status_code, fields)
+            if status_code == 400:
+                print ('\nmvc_controller.py post_endpoint Invalid_project_fields: {}\n'.format(fields))
+                return 400
+            else:
+                project_name = fields['project_name']
+                print ('\nmvc_controller.py post_endpoint project_name: {}'.format(project_name))
+                updated_project = mvc_model.update_project(fields)
+            return updated_project                    
 
 def get_endpoints(endpoint='/'):
     if '/' in endpoint:
@@ -136,7 +160,7 @@ def test_post_endpoints():
     description = 'Test project {}'.format(project_name)
     deadline = datetime.strftime( datetime.now(), ISO_8601_DATE)
     random_fields = {'project_name': project_name, 'description': description, 'deadline': deadline}
-    tests = ['/project/create']
+    tests = ['/project/create', '/project/update', '/project/delete']
     for test in tests:
         print('Testing with fields: {}\nfor post_endpoints: {}.'.format(fields,test))
         print(post_endpoints(fields,test))
@@ -144,8 +168,7 @@ def test_post_endpoints():
         
 def test_validate_project_fields():
     field_list =[ {'project_name': 'Create', 'description': 'test_post_endpoints', 'deadline':'2112-12-12'},
-                   {'project_name': '*', 'description': 'test_post_endpoints', 'deadline':'2112-12-12'}
-                ]
+                   {'project_name': '*', 'description': 'test_post_endpoints', 'deadline':'2112-12-12'}]
     print('Testing test_validate_project_fields(fields)') 
     pprint(field_list) 
     for field in field_list:

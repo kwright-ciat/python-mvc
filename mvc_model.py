@@ -183,6 +183,80 @@ def delete_project(fields, db_filename=db_filename_default):
             result = cursor.execute(query)
             row = result.fetchone()
             return row
+        
+def update_project(fields, db_filename=db_filename_default):
+    ''' 
+    Update one new project from the project table.
+    
+    Validate that the field value is a valid string without "%" or "?".
+    In first sprint attempt without checking list of projects.
+    
+    project_name and one other field 
+    '''
+    print('\nmvc_model.py update_project fields\n{}\n'.format(fields))
+    description = ''
+    deadline = ''
+    
+    try:
+        project_name = fields['project_name']
+        print ('\nmvc_model.py update_project project: {}\n'.format(project_name))
+    except KeyError:
+        print ('\nmvc_model.py update_project project_name field required')
+        return 400
+    
+    try:
+        description = fields['description']
+        print ('\nmvc_model.py update_project project: {}\n'.format(description))
+    except KeyError:
+        print ('\nmvc_model.py update_project project_name description field optional')
+        
+    try:
+        deadline = fields['deadline']
+        print ('\nmvc_model.py update_project deadline field: {}\n'.format(deadline))
+    except KeyError:
+        print ('\nmvc_model.py update_project deadline field optional')
+    
+    if description:
+        with sqlite3.connect(db_filename) as conn:
+            banned_chars = ('\'', '"', '\\', '//', '%', '?', '+', '-')
+            cursor = conn.cursor()
+            
+            for char in banned_chars:
+                if char in project_name:
+                    print ('\nmvc_model.py update_project project_name banned character.\n') 
+                    return 400    
+                   
+            if project_name.isalnum() or '_' in project_name  or ' ' in project_name: ## double check after the controller
+                query = """
+                update project
+                SET description = '{}'
+                WHERE name = '{}';
+                """.format(description, project_name) 
+            else:
+                query = ""
+        
+            print ('\nmvc_model.py update_project query: \n{}\n'.format(query))
+            try:
+                cursor.execute(query)
+            except sqlite3.IntegrityError:
+                print ('\nmvc_model.py add_project sqlite3 IntegrityError: Duplicate project name\n')
+                return 'IntegrityError',
+         
+            if query:
+                query = """
+                select name, description, deadline
+                from project 
+                where name = '{}' 
+                """.format(project_name)
+        
+                print ('\nmvc_model.py update_project query project updated: \n{}\n'.format(query))
+                result = cursor.execute(query)
+                row = result.fetchone()
+                return row
+    else:
+        print ('\nmvc_model.py update_project project_name and one other sfield required')
+        return 400       
+    
 def add_project(fields, db_filename=db_filename_default):
     ''' 
     Add a new project to the project table.
@@ -304,7 +378,7 @@ if __name__ == '__main__':
     if not exists_db(db_filename_default): 
         create_db()
     random.seed()
-    test_all()
-
-
+    #test_all()
+    update_project({'project_name':'ciat', 'description':'UPDATING TEST'}, db_filename_default)
+    test_get_projects('ciat')
 
