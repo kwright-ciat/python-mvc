@@ -115,7 +115,7 @@ class SimpleHandler(BaseHTTPRequestHandler):
         if not data:
             data = 'No records found.'
 
-        message_title = '\r\nProject Tasks\r\n'
+        message_title = 'Project Tasks\n\n'
         message = '\r\n'.join(('endpoint', endpoint, message_parts, message_title, data, '\r\n'))
         self.send_response(200)
         self.send_header('Content-Type',
@@ -150,5 +150,3 @@ def start_server(ip=ip_default, port=port_default):
 
 if __name__ == '__main__':
     start_server(ip_default, port_default)
-
-

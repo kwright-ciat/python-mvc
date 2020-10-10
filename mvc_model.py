@@ -24,48 +24,49 @@ def exists_db(db_filename=db_filename_default):
     return db_exists
     
 def create_db(db_filename=db_filename_default, schema_filename=schema_filename_default):
-    with sqlite3.connect(db_filename) as conn:
-        cursor = conn.cursor()
-        print('Creating schema')
-        with open(schema_filename, 'rt') as f:
-            schema = f.read()
+    if not exists_db(db_filename):
+        with sqlite3.connect(db_filename) as conn:
+            cursor = conn.cursor()
+            print('Creating schema')
+            with open(schema_filename, 'rt') as f:
+                schema = f.read()
+                
+            if testing:
+                print('Schema file: {}'.format(schema))
+                print('Inserting initial data')
+            cursor.executescript(schema)
             
-        if testing:
-            print('Schema file: {}'.format(schema))
-            print('Inserting initial data')
-        cursor.executescript(schema)
-        
-
-
-#         conn.executescript("""
-#         insert into project (name, description, deadline)
-#         values ('pymotw', 'Python Module of the Week',
-#                 '2016-11-01');
-# 
-#         insert into project (name, description, deadline)
-#         values ('ciat', 'CIS280A Cisco DevNet',
-#                 '2020-10-01');
-# 
-#         insert into task (details, status, deadline, project)
-#         values ('Create python-mvc Git Repository', 'done', '2020-10-02',
-#                 'ciat');
-# 
-#         insert into task (details, status, deadline, project)
-#         values ('Get basic /project and /task API endpoints working', 'wip', '2020-10-03',
-#                 'ciat');
-# 
-#         insert into task (details, status, deadline, project)
-#         values ('write about select', 'done', '2016-04-25',
-#                 'pymotw');
-# 
-#         insert into task (details, status, deadline, project)
-#         values ('write about random', 'waiting', '2016-08-22',
-#                 'pymotw');
-# 
-#         insert into task (details, status, deadline, project)
-#         values ('write about sqlite3', 'active', '2017-07-31',
-#                 'pymotw');
-#         """)
+    
+    
+    #         conn.executescript("""
+    #         insert into project (name, description, deadline)
+    #         values ('pymotw', 'Python Module of the Week',
+    #                 '2016-11-01');
+    # 
+    #         insert into project (name, description, deadline)
+    #         values ('ciat', 'CIS280A Cisco DevNet',
+    #                 '2020-10-01');
+    # 
+    #         insert into task (details, status, deadline, project)
+    #         values ('Create python-mvc Git Repository', 'done', '2020-10-02',
+    #                 'ciat');
+    # 
+    #         insert into task (details, status, deadline, project)
+    #         values ('Get basic /project and /task API endpoints working', 'wip', '2020-10-03',
+    #                 'ciat');
+    # 
+    #         insert into task (details, status, deadline, project)
+    #         values ('write about select', 'done', '2016-04-25',
+    #                 'pymotw');
+    # 
+    #         insert into task (details, status, deadline, project)
+    #         values ('write about random', 'waiting', '2016-08-22',
+    #                 'pymotw');
+    # 
+    #         insert into task (details, status, deadline, project)
+    #         values ('write about sqlite3', 'active', '2017-07-31',
+    #                 'pymotw');
+    #         """)
 
         
 def get_tasks(db_filename=db_filename_default, task_id='%'):
@@ -216,7 +217,46 @@ def update_project(fields, db_filename=db_filename_default):
     except KeyError:
         print ('\nmvc_model.py update_project deadline field optional')
     
-    if description:
+    if deadline:
+        deadline = datetime.strftime( datetime.now(), ISO_8601_DATE)
+        with sqlite3.connect(db_filename) as conn:
+            banned_chars = ('\'', '"', '\\', '//', '%', '?', '+', '-')
+            cursor = conn.cursor()
+            
+            for char in banned_chars:
+                if char in project_name:
+                    print ('\nmvc_model.py update_project project_name banned character.\n') 
+                    return 400    
+                   
+            if project_name.isalnum() or '_' in project_name  or ' ' in project_name: ## double check after the controller
+                query = """
+                update project
+                SET deadline = '{}'
+                WHERE name = '{}';
+                """.format(deadline, project_name) 
+            else:
+                print ('\nmvc_model.py update_project project_name banned character.\n') 
+                return 400   
+        
+            print ('\nmvc_model.py update_project query: \n{}\n'.format(query))
+            try:
+                cursor.execute(query)
+            except sqlite3.IntegrityError:
+                print ('\nmvc_model.py add_project sqlite3 IntegrityError: Duplicate project name\n')
+                return 'IntegrityError',
+         
+            if query:
+                query = """
+                select name, description, deadline
+                from project 
+                where name = '{}' 
+                """.format(project_name)
+        
+                print ('\nmvc_model.py update_project query project updated: \n{}\n'.format(query))
+                result = cursor.execute(query)
+                row = result.fetchone()
+                return row
+    elif description:
         with sqlite3.connect(db_filename) as conn:
             banned_chars = ('\'', '"', '\\', '//', '%', '?', '+', '-')
             cursor = conn.cursor()
@@ -312,8 +352,8 @@ def test_add_project(db_filename=db_filename_default):
     '''
     
     testing = True
-     
-    project_name = str(random.randint(1,10000))
+    project_id = str(random.randint(1000,9999))
+    project_name = ' '.join(('Project: ', project_id))
     description = 'Test add project'
     deadline = datetime.strftime( datetime.now(), ISO_8601_DATE)
     #deadline = '2112-12-12'
@@ -360,6 +400,15 @@ def test_delete_project():
     fields = {'project_name': 'pymotw'}
     delete_project(fields)
 
+def test_update_project():
+    '''
+    Test updating the 'ciat' project
+    '''
+    project_id = str(random.randint(1000,9999))
+    update_project({'project_name':'ciat', 'description':project_id}, db_filename_default)
+    update_project({'project_name':'ciat', 'deadline':'2112-12-12'}, db_filename_default)
+    test_get_projects('ciat')
+    
 def test_all():
     ''' Perform all tests for this module. '''
     test_get_projects('pymotw')
@@ -372,13 +421,13 @@ def test_all():
     test_get_projects()
     test_get_projects('%')
     test_get_projects('ciat')
+    test_update_project()     
         
 if __name__ == '__main__':
     ''' Execute statements below if run directly, but not when module is imported '''
     if not exists_db(db_filename_default): 
         create_db()
     random.seed()
-    #test_all()
-    update_project({'project_name':'ciat', 'description':'UPDATING TEST'}, db_filename_default)
-    test_get_projects('ciat')
+    test_all()
+
 
