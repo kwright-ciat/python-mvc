@@ -176,6 +176,7 @@ def test_validate_project_fields():
         print('Result of test', validate_project_fields(field))
 
 if __name__ == '__main__':
+    # Should implement mvc_app.Test conditional test
     # test_validate_project_fields()
     # test_get_endpoints()
     test_post_endpoints()
