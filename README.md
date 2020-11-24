@@ -4,7 +4,7 @@
 * Use Python 3.7 in a virtual environment
 * Use SQLite3 for a serverless database
 * Use Dockerfile to implement a container
-* Show webhooks on github.com need "/github" added to the webhook for Discord and testing
+* Show webhooks on github.com need "/github" added to the webhook for Discord
 
 # Application Testing
 ## To start the application execute:
