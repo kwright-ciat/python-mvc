@@ -1,5 +1,7 @@
 '''
 Provide namespace for variables to other modules
+
+Use this one file for all global settings.
 '''
 
 ISO_8601_DATE = '%Y-%m-%dT%H:%M:%SZ'
