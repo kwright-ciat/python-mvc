@@ -2,7 +2,7 @@
 '''
 Presents a MVC View to client 
 
-Only communicates with the Controller and client.
+Only communicates with the Controller and presents View to client.
 '''
 from urllib import parse
 import cgi
