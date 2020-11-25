@@ -26,7 +26,8 @@ The docker-machine ip command will show the correct IP to connect
 
 wrigh@x751s MINGW64 /c/Program Files/Docker Toolbox
 $ docker-machine.exe  ip
-192.168.99.101
+192.168.99.101 
+
 
 Be sure to use the correct port, 8080, or your connection is refused
 
